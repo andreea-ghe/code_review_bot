@@ -19,7 +19,7 @@ on:
 
 jobs:
   call_gpt_code_review:
-    uses: andreea-ghe/code_review_bot/.github/workflows/main.yml@main
+    uses: andreea-ghe/code_review_bot/.github/workflows/code_review.yml@main
     with:
       base_branch: 'main'
     secrets:
