@@ -42,16 +42,17 @@ def generate_feedback(file_name, diff, code_content, all_files_content):
     P.S. Please write in a github markdown format. Thank you <3
     Your review:
     """
-    # This line is optional, if wanting to traverse the entire code
+    # This line is optional, if wanting to traverse the entire code, if the code is too large, it won't work as it doesn't have enough tokens
     # Next, here is the list of all files and their content to help you understand the overall impact: {all_files_content}
 
     def get_completion():
         response = completion(
-            model="llama3",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": system_message},
             ],
-            api_base=os.getenv('MY_URL')
+            api_key=os.getenv('MY_URL')
+            # api_base=os.getenv('MY_URL') for running local models
         )
         return response
 
