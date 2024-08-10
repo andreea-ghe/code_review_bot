@@ -1,0 +1,68 @@
+name: Super-Linter
+
+on: 
+ workflow_call:
+    inputs:
+      base_branch:
+        description: 'Base branch to compare against'
+        required: true
+        type: string
+      github_repository:
+        description: 'Github repository'
+        required: true
+        type: string
+    secrets:
+      token:
+        description: 'GitHub Token'
+        required: true
+      secret_url:
+        description: 'Ngrok url'
+        required: true
+
+jobs:
+  super-lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.github_repository }}
+          token: ${{ secrets.token }}
+          secret_url: ${{ secrets.secret_url }}
+
+      - name: Clone Scripts Repository if Empty
+        run: |
+          mkdir -p /home/runner/work/SOS-LLM/SOS-LLM/clone
+          if [ -z "$(ls -A /home/runner/work/SOS-LLM/SOS-LLM/clone)" ]; then
+            git clone https://x-access-token:${{ secrets.token }}@github.com/computacenter-ro/SOS-LLM.git /home/runner/work/SOS-LLM/SOS-LLM/clone
+          else
+            echo "Directory is not empty, skipping clone"
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyGithub python-dotenv tenacity
+
+      - name: Run Super-Linter
+        uses: github/super-linter@v4
+        continue-on-error: true
+        env:
+          DEFAULT_BRANCH:  ${{ inputs.base_branch }}
+          GITHUB_TOKEN: ${{ secrets.token }}
+
+      - name: Run Push Event Script
+        if: ${{ always() }}
+        env:
+          MY_GITHUB_TOKEN: ${{ secrets.token }}
+          GITHUB_REPOSITORY: ${{ inputs.github_repository }}
+        run: |
+          echo "Running create_pr.py"
+          python /home/runner/work/SOS-LLM/SOS-LLM/clone/create_pr.py
+          echo "create_pr.py has finished running"
