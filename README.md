@@ -4,7 +4,7 @@
 2. click settings
 3. click actions under Secrets and Variables
 4. create a new secret `MY_GITHUB_TOKEN` with the value of your github token (remember to give it all the rights)
-5. create another secret `MY_SECRET_URL` which will have the value provided by us, in order to connect to our local server
+5. create another secret `MY_SECRET_URL` which will have the api key of your model
    
 ![image that shows how to use secrets](https://github.com/andreea-ghe/code_review_bot/blob/main/secrets_photo.png?raw=true)
 
@@ -19,7 +19,7 @@ on:
 
 jobs:
   call_gpt_code_review:
-    uses: computacenter-ro/SOS-LLM/.github/workflows/main.yml@main
+    uses: andreea-ghe/code_review_bot/.github/workflows/main.yml@main
     with:
       base_branch: 'main'
     secrets:
@@ -35,7 +35,7 @@ on: push
 
 jobs:
   call_superlinter:
-    uses: computacenter-ro/SOS-LLM/.github/workflows/superlinter.yml@main
+    uses: andreea-ghe/code_review_bot/.github/workflows/superlinter.yml@main
     with:
       base_branch: 'main'
       github_repository: ${{ github.repository }}
