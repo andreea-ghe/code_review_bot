@@ -33,9 +33,9 @@ jobs:
 
       - name: Clone Scripts Repository if Empty
         run: |
-          mkdir -p /home/runner/work/SOS-LLM/SOS-LLM/clone
-          if [ -z "$(ls -A /home/runner/work/SOS-LLM/SOS-LLM/clone)" ]; then
-            git clone https://x-access-token:${{ secrets.token }}@github.com/computacenter-ro/SOS-LLM.git /home/runner/work/SOS-LLM/SOS-LLM/clone
+          mkdir -p /home/runner/work/code_review_bot/code_review_bot/clone
+          if [ -z "$(ls -A /home/runner/work/code_review_botcode_review_bot/clone)" ]; then
+            git clone https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
           else
             echo "Directory is not empty, skipping clone"
           fi
@@ -64,5 +64,5 @@ jobs:
           GITHUB_REPOSITORY: ${{ inputs.github_repository }}
         run: |
           echo "Running create_pr.py"
-          python /home/runner/work/SOS-LLM/SOS-LLM/clone/create_pr.py
+          python /home/runner/work/code_review_bot/code_review_bot/clone/create_pr.py
           echo "create_pr.py has finished running"
