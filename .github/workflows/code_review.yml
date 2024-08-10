@@ -32,12 +32,12 @@ jobs:
 
       - name: Clone Scripts Repository if Empty
         run: |
-          if [ ! -d /home/runner/work/SOS-LLM/SOS-LLM/clone ]; then
-            mkdir -p /home/runner/work/SOS-LLM/SOS-LLM/clone
+          if [ ! -d /home/runner/work/code_review_bot/code_review_bot/clone ]; then
+            mkdir -p /home/runner/work/code_review_bot/code_review_bot/clone
           fi
-          ls -l /home/runner/work/SOS-LLM/SOS-LLM/clone
-          if [ -z "$(ls -A /home/runner/work/SOS-LLM/SOS-LLM/clone)" ]; then
-             git clone https://x-access-token:${{ secrets.token }}@github.com/computacenter-ro/SOS-LLM.git /home/runner/work/SOS-LLM/SOS-LLM/clone
+          ls -l /home/runner/work/code_review_bot/code_review_bot/clone
+          if [ -z "$(ls -A /home/runner/work/code_review_bot/code_review_bot/clone)" ]; then
+             git clone https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
           else
              echo "Directory is not empty, skipping clone"
           fi
@@ -53,11 +53,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r /home/runner/work/SOS-LLM/SOS-LLM/clone/requirements.txt
+          pip install -r /home/runner/work/code_review_bot/code_review_botclone/requirements.txt
 
       - name: Initialize package.json if missing
         run: |
-          cd /home/runner/work/SOS-LLM/SOS-LLM/clone
+          cd /home/runner/work/code_review_bot/code_review_bot/clone
           if [ ! -f "package.json" ]; then
             npm init -y
           fi
@@ -112,8 +112,7 @@ jobs:
           MY_URL: ${{ secrets.secret_url}}
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          python3 /home/runner/work/SOS-LLM/SOS-LLM/clone/chatbot.py "$changed_files"
-          # python3 chatbot.py "$changed_files"
+          python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
           cat reviews.txt
 
       - name: Get Latest Commit ID
@@ -152,12 +151,12 @@ jobs:
                 # Display the content of aux.txt
                 cat aux.txt
                 escaped_comments=$(echo -e "\n$(cat aux.txt)" | jq -s -R -r @json)
-                parsed_values=$(python3 /home/runner/work/SOS-LLM/SOS-LLM/clone/parse_diff.py <<< "$diff")
+                parsed_values=$(python3 /home/runner/work/code_review_bot/code_review_bot/clone/parse_diff.py <<< "$diff")
                 start_line=$(echo "$parsed_values" | awk '{print $1}')
                 line=$(echo "$parsed_values" | awk '{print $2}')
                 start_side=$(echo "$parsed_values" | awk '{print $3}')
                 side=$(echo "$parsed_values" | awk '{print $4}')
-                node /home/runner/work/SOS-LLM/SOS-LLM/clone/post-comments.mjs "$escaped_comments" "${{ github.event.pull_request.head.sha }}" "${file_names[-1]}" "$start_line" "$line" "$start_side" "$side"
+                node /home/runner/work/code_review_bot/code_review_bot/clone/post_comm.mjs "$escaped_comments" "${{ github.event.pull_request.head.sha }}" "${file_names[-1]}" "$start_line" "$line" "$start_side" "$side"
                 > aux.txt
             fi
           done < reviews.txt
