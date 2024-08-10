@@ -1,0 +1,163 @@
+name: GPT Code Review
+
+on:
+  workflow_call:
+    inputs:
+      base_branch:
+        description: 'Base branch to compare against'
+        required: true
+        type: string
+    secrets:
+      token:
+        description: 'GitHub Token'
+        required: true
+      secret_url:
+        description: 'Ngrok url'
+        required: true
+
+  # pull_request:
+  #   types: [opened, synchronize, reopened]
+  # workflow_dispatch:
+
+jobs:
+  code_review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.token }}
+          secret_url: ${{ secrets.secret_url }}
+
+      - name: Clone Scripts Repository if Empty
+        run: |
+          if [ ! -d /home/runner/work/SOS-LLM/SOS-LLM/clone ]; then
+            mkdir -p /home/runner/work/SOS-LLM/SOS-LLM/clone
+          fi
+          ls -l /home/runner/work/SOS-LLM/SOS-LLM/clone
+          if [ -z "$(ls -A /home/runner/work/SOS-LLM/SOS-LLM/clone)" ]; then
+             git clone https://x-access-token:${{ secrets.token }}@github.com/computacenter-ro/SOS-LLM.git /home/runner/work/SOS-LLM/SOS-LLM/clone
+          else
+             echo "Directory is not empty, skipping clone"
+          fi
+
+      - name: Cache Python Packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r /home/runner/work/SOS-LLM/SOS-LLM/clone/requirements.txt
+
+      - name: Initialize package.json if missing
+        run: |
+          cd /home/runner/work/SOS-LLM/SOS-LLM/clone
+          if [ ! -f "package.json" ]; then
+            npm init -y
+          fi
+          npm install @octokit/core@latest node-fetch
+
+      - name: Fetch Base Branch
+        run: |
+          git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@v34
+
+      - name: List All Changed Files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - name: Create Diffs Directory
+        run: mkdir -p diffs
+
+      - name: Get File Diffs
+        run: |
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          echo "Generating diffs for: $changed_files"
+          for file in $changed_files; do
+            dir_name=$(dirname "$file")
+            mkdir -p "diffs/$dir_name"
+            if git diff origin/${{ inputs.base_branch }} -- "$file" > "diffs/$file.diff"; then
+              echo "Diff for $file generated successfully."
+            else
+              echo "No diff generated for $file. Skipping."
+              rm -f "diffs/$file.diff"
+            fi
+          done
+
+      - name: Create All Files Directory
+        run: mkdir -p all_files
+
+      - name: Copy All Files to Directory
+        run: |
+          all_files=$(git ls-tree -r HEAD --name-only)
+          for file in $all_files; do
+            dir_name=$(dirname "$file")
+            mkdir -p "all_files/$dir_name"
+            cp "$file" "all_files/$file"
+          done
+
+      - name: Run Python Script
+        env:
+          MY_URL: ${{ secrets.secret_url}}
+        run: |
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          python3 /home/runner/work/SOS-LLM/SOS-LLM/clone/chatbot.py "$changed_files"
+          # python3 chatbot.py "$changed_files"
+          cat reviews.txt
+
+      - name: Get Latest Commit ID
+        id: get_commit
+        run: echo "commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Add Code Suggestions Comments
+        env:
+          COMMIT_ID: ${{ github.event.pull_request.head.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_NUMBER: ${{ github.event.number }}
+          GITHUB_TOKEN: ${{ secrets.token }}
+        run: |
+          commit_id=${{ env.commit_id }}
+          file_names=()
+          diff=""
+          review=""
+          # Read from the file reviews.txt
+          while IFS= read -r line; do
+            if [[ $line == "FILE: "* ]]; then
+                file_names+=("${line#FILE: }")
+            elif [[ $line == "DIFF: "* ]]; then
+              diff=""
+              while IFS= read -r diff_line; do
+                  [[ $diff_line == "ENDDIFF" ]] && break
+                  diff+="$diff_line"$'\n'
+              done
+            elif [[ $line == "REVIEW: "* ]]; then
+                review=""
+                while IFS= read -r review_line; do
+                    [[ $review_line == "ENDREVIEW" ]] && break
+                    review+="$review_line"$'\n'
+                done
+                # Write the review to aux.txt
+                echo -e "$review" >> aux.txt
+                # Display the content of aux.txt
+                cat aux.txt
+                escaped_comments=$(echo -e "\n$(cat aux.txt)" | jq -s -R -r @json)
+                parsed_values=$(python3 /home/runner/work/SOS-LLM/SOS-LLM/clone/parse_diff.py <<< "$diff")
+                start_line=$(echo "$parsed_values" | awk '{print $1}')
+                line=$(echo "$parsed_values" | awk '{print $2}')
+                start_side=$(echo "$parsed_values" | awk '{print $3}')
+                side=$(echo "$parsed_values" | awk '{print $4}')
+                node /home/runner/work/SOS-LLM/SOS-LLM/clone/post-comments.mjs "$escaped_comments" "${{ github.event.pull_request.head.sha }}" "${file_names[-1]}" "$start_line" "$line" "$start_side" "$side"
+                > aux.txt
+            fi
+          done < reviews.txt
