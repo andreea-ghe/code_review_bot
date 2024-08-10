@@ -53,7 +53,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r /home/runner/work/code_review_bot/code_review_botclone/requirements.txt
+          pip install -r /home/runner/work/code_review_bot/code_review_bot/clone/requirements.txt
 
       - name: Initialize package.json if missing
         run: |
