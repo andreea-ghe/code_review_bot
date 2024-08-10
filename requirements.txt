@@ -1,0 +1,5 @@
+litellm
+openai
+python-dotenv
+ollama
+tenacity
