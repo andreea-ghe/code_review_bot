@@ -112,8 +112,7 @@ jobs:
           MY_URL: ${{ secrets.secret_url}}
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          # python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
-          pylint . || true > reviews.txt
+          python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
           cat reviews.txt
 
       - name: Get Latest Commit ID
@@ -160,4 +159,5 @@ jobs:
                 node /home/runner/work/code_review_bot/code_review_bot/clone/post_comm.mjs "$escaped_comments" "${{ github.event.pull_request.head.sha }}" "${file_names[-1]}" "$start_line" "$line" "$start_side" "$side"
                 > aux.txt
             fi
+            node /home/runner/work/code_review_bot/code_review_bot/clone/post_comm.mjs "$escaped_comments" "${{ github.event.pull_request.head.sha }}" "${file_names[-1]}" "$start_line" "$line" "$start_side" "$side"
           done < reviews.txt
