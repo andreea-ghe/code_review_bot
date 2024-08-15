@@ -113,7 +113,7 @@ jobs:
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           # python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
-          pylint . || true
+          pylint . || true > reviews.txt
           cat reviews.txt
 
       - name: Get Latest Commit ID
