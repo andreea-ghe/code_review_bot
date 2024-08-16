@@ -121,10 +121,10 @@ jobs:
           cat reviews.txt
           input_file="reviews.txt"
           awk '
-          /^\*\*\*\*\*\*\*\*\*\*\*/ {  # Match lines with the file path
+          /^\*\*\*\*\*\*\*\*\*\*\*\*\*/ {  # Match lines with the file path
               file_name = $3
           }
-          /^[^\*]/ {  # Match lines that do not start with asterisks (review lines)
+          /^[^\*]/ && file_name {  # Match lines that do not start with asterisks (review lines)
               print "File: " file_name
               print "Review: " $0
               print ""
