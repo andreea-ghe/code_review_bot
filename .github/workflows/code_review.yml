@@ -122,8 +122,8 @@ jobs:
           input_file="reviews.txt"
           declare -A file_reviews
           
-          # Read and process the reviews.txt
-          awk '
+          # Read the entire reviews.txt into a variable
+          content=$(awk '
           /^\*\*\*\*\*\*\*\*\*\*\*\*\*/ {  # Match lines with exactly 13 asterisks
               file_name = $3
           }
@@ -131,7 +131,10 @@ jobs:
               print "File: " file_name
               print "Review: " $0
           }
-          ' "$input_file" | while read -r line; do
+          ' "$input_file")
+          
+          # Process each line of content
+          while IFS= read -r line; do
               if [[ $line == File:* ]]; then
                   file_name=$(echo "$line" | cut -d" " -f2)
                   current_file="$file_name"
@@ -141,12 +144,12 @@ jobs:
                   # Aggregate reviews for each file
                   file_reviews["$current_file"]+="$review\n"
               fi
-          done
+          done <<< "$content"
           
           # Now post a single comment per file with all aggregated reviews
           for file_name in "${!file_reviews[@]}"; do
               reviews=${file_reviews["$file_name"]}
-              echo $file_name, $reviews
+              echo "$file_name, $reviews"
           
               # Make an API call to post the comment on the PR
               # curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
