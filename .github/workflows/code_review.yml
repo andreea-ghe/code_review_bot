@@ -100,6 +100,18 @@ jobs:
           GITHUB_EVENT_NUMBER: ${{ github.event.number }}
           GITHUB_TOKEN: ${{ secrets.token }}
         run: |
+          # Use awk to process the file
+          awk '
+          /^\*\*\*\*\*\*\*\*\*\*\*/ {  # Match lines with the file path
+              file_name = $3
+          }
+          /^[^\*]/ {  # Match lines that do not start with asterisks (review lines)
+              print "File: " file_name
+              print "Review: " $0
+              print ""
+          }
+          ' $reviews.txt
+          
           curl -L \
           -X POST \
           -H "Accept: application/vnd.github+json" \
