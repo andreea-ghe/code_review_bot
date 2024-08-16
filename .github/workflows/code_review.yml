@@ -151,7 +151,7 @@ jobs:
               reviews=${file_reviews["$file_name"]}
 
               formatted_reviews=$(echo -e "$reviews" | sed ':a;N;$!ba;s/\n/\\n/g')
-              comment = "__FILE: $file_name__\\n\\n$formatted_reviews"
+              comment="__FILE: $file_name__\\n\\n$formatted_reviews"
               
               # Make an API call to post the comment on the PR
               curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
