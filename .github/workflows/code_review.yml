@@ -118,7 +118,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.token }}
         run: |
           # Use awk to process the file
-          cat reviews.txt
           
           input_file="reviews.txt"
           declare -A file_reviews
@@ -141,14 +140,13 @@ jobs:
           
                   # Aggregate reviews for each file
                   file_reviews["$current_file"]+="$review\n"
-                  echo ${file_reviews["$current_file"]}
               fi
           done
           
           # Now post a single comment per file with all aggregated reviews
-          for file_name in "${file_reviews[@]}"; do
+          for file_name in "${!file_reviews[@]}"; do
               reviews=${file_reviews["$file_name"]}
-              echo $reviews
+              echo $file_name, $reviews
           
               # Make an API call to post the comment on the PR
               # curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
