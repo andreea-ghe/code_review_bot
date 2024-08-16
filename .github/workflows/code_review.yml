@@ -148,7 +148,7 @@ jobs:
           # Now post a single comment per file with all aggregated reviews
           for file_name in "${!file_reviews[@]}"; do
               reviews=${file_reviews["$file_name"]}
-              echo $file_name, $reviews
+              echo "oh mhy"
           
               # Make an API call to post the comment on the PR
               curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
