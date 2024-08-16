@@ -96,8 +96,6 @@ jobs:
             echo "No Python files to lint."
           fi
           
-          cat reviews.txt
-
       - name: Get Latest Commit ID
         id: get_commit
         run: echo "commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
