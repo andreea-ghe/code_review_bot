@@ -84,8 +84,17 @@ jobs:
           MY_URL: ${{ secrets.secret_url}}
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          # python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
-          pylint $changed_files > reviews.txt || true
+          
+          # Filter to only include Python files
+          python_files=$(echo "$changed_files" | grep -E '\.py$')
+          
+          if [ -n "$python_files" ]; then
+            # Run pylint on the filtered Python files
+            pylint $python_files > reviews.txt || true
+            cat reviews.txt
+          else
+            echo "No Python files to lint."
+          fi
           
           cat reviews.txt
 
