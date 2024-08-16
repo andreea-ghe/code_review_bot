@@ -151,9 +151,9 @@ jobs:
               echo "oh mhy"
           
               # Make an API call to post the comment on the PR
-              curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.number }}/comments \
-              -d "{\"body\": \"**File: $file_name**\n\n$reviews\"}"
+              # curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
+              # -H "Accept: application/vnd.github.v3+json" \
+              # https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.number }}/comments \
+              # -d "{\"body\": \"**File: $file_name**\n\n$reviews\"}"
           done
         shell: bash
