@@ -136,6 +136,7 @@ jobs:
               if [[ $line == File:* ]]; then
                   file_name=$(echo "$line" | cut -d" " -f2)
                   current_file="$file_name"
+                  echo $current_file
               elif [[ $line == Review:* ]]; then
                   review=$(echo "$line" | cut -d" " -f2-)
           
