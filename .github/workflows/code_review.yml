@@ -28,6 +28,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.token }}
+          secret_url: ${{ secrets.secret_url }}
 
       - name: Clone Scripts Repository if Empty
         run: |
