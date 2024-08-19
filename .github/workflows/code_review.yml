@@ -11,9 +11,6 @@ on:
       token:
         description: 'GitHub Token'
         required: true
-      secret_url:
-        description: 'Ngrok url'
-        required: true
 
   # pull_request:
   #   types: [opened, synchronize, reopened]
@@ -28,7 +25,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.token }}
-          secret_url: ${{ secrets.secret_url }}
 
       - name: Clone Scripts Repository if Empty
         run: |
