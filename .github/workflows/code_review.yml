@@ -150,11 +150,18 @@ jobs:
 
               # Create the comment with Markdown and HTML formatting
               comment="**FILE: $file_name**<br><br>$formatted_reviews"
+              comment=$(echo "$comment" | sed 's/"/\\"/g')
+
+              # Create the JSON payload
+              json_payload=$(printf '{"body": "%s"}' "$comment")
               
+              # Print JSON for debugging
+              echo "$json_payload"
+                            
               # Make an API call to post the comment on the PR
               curl -s -X POST -H "Authorization: token ${{ secrets.token }}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.number }}/comments \
-              -d "{\"body\": \"$comment\"}"
+              -d "$json_payload"
           done
         shell: bash
