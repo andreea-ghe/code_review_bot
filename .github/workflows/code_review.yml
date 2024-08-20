@@ -95,7 +95,7 @@ jobs:
         env:
           MY_URL: ${{ secrets.secret_url}}
         run: |
-          export DJANGO_SETTINGS_MODULE=your_project.settings
+          export DJANGO_SETTINGS_MODULE=${{ github.repository }}.settings
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           
           # Filter to only include Python files
