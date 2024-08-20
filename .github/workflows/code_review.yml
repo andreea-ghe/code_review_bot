@@ -77,10 +77,15 @@ jobs:
         run: mkdir -p all_files
 
       - name: Set Django settings module
-        run: echo "DJANGO_SETTINGS_MODULE=${{ $(echo "${{ github.repository }}" | cut -d'/' -f2) }}.settings" >> $GITHUB_ENV
+        run: |
+          PROJECT_DIR=$(basename "$(echo "${{ github.repository }}" | cut -d'/' -f2)")
+          echo "DJANGO_SETTINGS_MODULE=${PROJECT_DIR}.settings" >> $GITHUB_ENV
 
       - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+        run: |
+          PROJECT_DIR=$(basename "$(echo "${{ github.repository }}" | cut -d'/' -f2)")
+          echo "PYTHONPATH=$PYTHONPATH:$(pwd)/$PROJECT_DIR" >> $GITHUB_ENV
+
 
       - name: Copy All Files to Directory
         run: |
