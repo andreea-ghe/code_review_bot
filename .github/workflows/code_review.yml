@@ -96,7 +96,7 @@ jobs:
           
           if [ -n "$python_files" ]; then
             # Run pylint on the filtered Python files
-            pylint --load-plugins pylint_django $python_files > reviews.txt || true
+            pylint $python_files > reviews.txt || true
             cat reviews.txt
           else
             echo "No Python files to lint."
