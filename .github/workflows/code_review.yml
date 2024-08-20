@@ -76,6 +76,12 @@ jobs:
       - name: Create All Files Directory
         run: mkdir -p all_files
 
+      - name: Set Django settings module
+        run: echo "DJANGO_SETTINGS_MODULE=${{ github.repository }}.settings" >> $GITHUB_ENV
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
       - name: Copy All Files to Directory
         run: |
           all_files=$(git ls-tree -r HEAD --name-only)
@@ -89,6 +95,7 @@ jobs:
         env:
           MY_URL: ${{ secrets.secret_url}}
         run: |
+          export DJANGO_SETTINGS_MODULE=your_project.settings
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           
           # Filter to only include Python files
