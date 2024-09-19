@@ -63,8 +63,8 @@ jobs:
           npm install @octokit/core@latest node-fetch
 
       - name: Fetch Base Branch (Main)
-        run: git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
-        # run: git fetch origin main:main
+        # run: git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
+        run: git fetch origin main:main
 
       - name: Get Changed Files
         id: changed-files
