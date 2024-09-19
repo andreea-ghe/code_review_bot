@@ -155,7 +155,7 @@ def get_file_diffs(file_list):
     for file_name in file_list.split():
         # Replace slashes with underscores
         sanitized_file_name = file_name.replace("/", "_")
-        diff_file = f"diffs/{sanitized_file_name}.diff"
+        diff_file = f"diffs/{file_name}.diff"
         
         if os.path.exists(diff_file):
             with open(f"differs/{sanitized_file_name}.txt", "w") as original_file:
