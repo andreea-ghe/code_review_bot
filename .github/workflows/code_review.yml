@@ -37,7 +37,7 @@ jobs:
           fi
           ls -l /home/runner/work/code_review_bot/code_review_bot/clone
           if [ -z "$(ls -A /home/runner/work/code_review_bot/code_review_bot/clone)" ]; then
-             git -b ${{ inputs.base_branch }} clone https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
+             git clone -b ${{ inputs.base_branch }} https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
           else
              echo "Directory is not empty, skipping clone"
           fi
