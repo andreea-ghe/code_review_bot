@@ -1,6 +1,7 @@
 import os
 import sys
 import mimetypes
+import traceback
 
 from dotenv import load_dotenv
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -92,6 +93,7 @@ def generate_feedback():
         
         # Process each diff file and provide feedback
         for filename in os.listdir("diffs"):  # Read from the diffs directory
+            print("filename:", filename)
             chat_history.clear()
             if filename.endswith(".diff"):
                 loader_diff = TextLoader(f"diffs/{filename}")
@@ -114,7 +116,9 @@ def generate_feedback():
                         token_count += chunk_tokens
 
                 result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
-    
+                
+                print(f"diffs/{filename}\n")
+                print("answer: ", result["answer"])
         
                 # Append the review to the reviews.txt file
                 with open("reviews.txt", "a") as output_file:
@@ -127,6 +131,7 @@ def generate_feedback():
     try:
         get_review()
     except Exception as e:
+        traceback.print_exc()
         raise CompletionError(f"Failed to generate feedback after 3 retries: {str(e)}")
 
 def get_all_files_and_content():
