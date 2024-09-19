@@ -45,6 +45,9 @@ jobs:
       - name: List Cloned Branches
         run: git branch -a
 
+      - name: List Remote Branches
+        run: git ls-remote --heads origin
+
       - name: Set Remote Tracking Branch
         run: |
           git branch -u origin/${{ inputs.base_branch }} ${{ inputs.base_branch }}
