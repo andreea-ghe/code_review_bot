@@ -122,8 +122,8 @@ def generate_feedback():
         chat_history = []
         
         # Process each diff file and provide feedback
-        for filename in os.listdir("diffs"):
-            loader_diff = TextLoader(f"diffs/{filename}")
+        for filename in os.listdir("differs"):
+            loader_diff = TextLoader(f"differs/{filename}")
             diff_documents = loader_diff.load()
     
             # Split the diff into manageable chunks
@@ -140,7 +140,7 @@ def generate_feedback():
     
             # Append the review to the reviews.txt file
             with open("reviews.txt", "a") as output_file:
-                with open(f"diffs/{filename}") as file:
+                with open(f"differs/{filename}", "r") as file:
                     output_file.write(f"FILE: {filename}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
                     
     try:
@@ -150,15 +150,15 @@ def generate_feedback():
 
 def get_file_diffs(file_list):
     """Generate diff files from the provided file list."""
-    if not os.path.isdir("diffs"):
-        os.mkdir("diffs")
+    if not os.path.isdir("differs"):
+        os.mkdir("differs")
     for file_name in file_list.split():
         # Replace slashes with underscores
         sanitized_file_name = file_name.replace("/", "_")
         diff_file = f"diffs/{sanitized_file_name}.diff"
         
         if os.path.exists(diff_file):
-            with open(f"diffs/{sanitized_file_name}.txt", "w") as original_file:
+            with open(f"differs/{sanitized_file_name}.txt", "w") as original_file:
                 with open(diff_file, 'r') as file:
                     diff = file.read()
                 original_file.write(diff)
