@@ -65,7 +65,7 @@ jobs:
 
       - name: Fetch Base Branch
         run: |
-          git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
+          git fetch origin ${{ inputs.base_branch }}
 
       - name: Get Changed Files
         id: changed-files
