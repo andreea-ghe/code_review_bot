@@ -2,10 +2,9 @@ import os
 import sys
 from dotenv import load_dotenv
 from langchain.chains import RetrievalQA
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, before_sleep_log
@@ -26,7 +25,7 @@ def generate_feedback():
         if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
-        llm_model = OpenAI(model="gpt-3.5-turbo", openai_api_key=os.getenv("MY_URL"))
+        llm_model = OpenAI(model="gpt-4", openai_api_key=os.getenv("MY_URL"))
     
         # Load the entire app's content for context
         loader_all_files_content = TextLoader("all_files_content.txt")
