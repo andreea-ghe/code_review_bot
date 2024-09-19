@@ -20,7 +20,7 @@ class CompletionError(Exception):
     """Custom exception for completion errors"""
     pass
 
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry=retry_if_exception_type(Exception), before_sleep_log(logger, logging.WARNING))
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry=retry_if_exception_type(Exception), before_sleep_log=before_sleep_log(logger, logging.WARNING))
 def generate_feedback():
     ### Construct retriever ###
     api_key = os.getenv("OPENAI_API_KEY")  # Make sure this is the correct environment variable
