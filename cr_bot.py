@@ -140,7 +140,7 @@ def generate_feedback():
             # Append the review to the reviews.txt file
             with open("reviews.txt", "a") as output_file:
                 with open(f"diffs/{filename}") as file:
-                    output_file.write(f"FILE: {filename}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result["answer"]}\nENDREVIEW")
+                    output_file.write(f"FILE: {filename}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
                     
     try:
         get_review()
