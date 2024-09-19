@@ -3,11 +3,11 @@ import sys
 from dotenv import load_dotenv
 from langchain.chains import RetrievalQA
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.vectorstores import Chroma
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.llms import OpenAI
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.llms import OpenAI
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, before_sleep_log
 import logging
 
@@ -22,7 +22,7 @@ class CompletionError(Exception):
 def generate_feedback():
     def get_review():
         ### Construct retriever ###
-        api_key = os.getenv("OPENAI_API_KEY")  # Make sure this is the correct environment variable
+        api_key = os.getenv("MY_URL")  # Make sure this is the correct environment variable
         if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
