@@ -92,41 +92,42 @@ def generate_feedback():
             return len(enc.encode(message_content))
         
         # Process each diff file and provide feedback
-        for filename in os.listdir("diffs"):
-            print("filename:", filename)
-            chat_history.clear()
-            if filename.endswith(".diff"):
-                loader_diff = TextLoader(f"diffs/{filename}")
-                diff_documents = loader_diff.load()
-        
-                # Split the diff into manageable chunks
-                diff_chunks = text_splitter.split_documents(diff_documents)
-                
-                token_count = 0
-                chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
-                token_count += count_tokens("Here starts the diff file:\n", model="gpt-4")
-                token_count += count_tokens("Please analyse the last diff file that was given to you in the context of the entire app", model="gpt-4")
-                for i, chunk in enumerate(diff_chunks):
-                    chunk_content = chunk.page_content
-                    chunk_tokens = count_tokens(chunk_content, model="gpt-4")
-                    if token_count + chunk_tokens >= 7500:
-                        break
-                    else:
-                        chat_history.append(HumanMessage(content = chunk_content))
-                        token_count += chunk_tokens
-
-                result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
-                
-                print(f"diffs/{filename}\n")
-                print("answer: ", result["answer"])
-        
-                # Append the review to the reviews.txt file
-                with open("reviews.txt", "a") as output_file:
-                    with open(f"diffs/{filename}", "r") as file:
-                        output_file.write(f"FILE: {os.path.splitext(filename)[0]}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
-                
-                chat_history.clear()
-
+        for root, dirs, files in os.walk("diffs"):
+            for filename in files:
+                if filename.endswith(".diff"):
+                    filepath = os.path.join(root, filename)
+                    print("Processing diff file:", filepath)
+                    
+                    chat_history.clear()
+                    loader_diff = TextLoader(filepath)
+                    diff_documents = loader_diff.load()
+            
+                    # Split the diff into manageable chunks
+                    diff_chunks = text_splitter.split_documents(diff_documents)
+                    
+                    token_count = 0
+                    chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
+                    token_count += count_tokens("Here starts the diff file:\n", model="gpt-4")
+                    token_count += count_tokens("Please analyse the last diff file that was given to you in the context of the entire app", model="gpt-4")
+                    for i, chunk in enumerate(diff_chunks):
+                        chunk_content = chunk.page_content
+                        chunk_tokens = count_tokens(chunk_content, model="gpt-4")
+                        if token_count + chunk_tokens >= 7500:
+                            break
+                        else:
+                            chat_history.append(HumanMessage(content = chunk_content))
+                            token_count += chunk_tokens
+    
+                    result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
+                    
+                    print(f"diffs/{filename}\n")
+                    print("answer: ", result["answer"])
+            
+                    # Append the review to the reviews.txt file
+                    with open("reviews.txt", "a") as output_file:
+                        with open(f"diffs/{filename}", "r") as file:
+                            output_file.write(f"FILE: {os.path.splitext(filename)[0]}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
+                    
                     
     try:
         get_review()
