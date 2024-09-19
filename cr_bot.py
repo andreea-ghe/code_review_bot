@@ -17,6 +17,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 load_dotenv()
+
 class CompletionError(Exception):
     """Custom exception for completion errors"""
     pass
@@ -82,6 +83,11 @@ def generate_feedback():
         rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
 
         chat_history = []
+        MAX_TOKENS = 8192
+        
+        def count_tokens(message_content, model):
+            enc = tiktoken.encoding_for_model(model)
+            return len(enc.encode(message_content))
         
         # Process each diff file and provide feedback
         for filename in os.listdir("diffs"):  # Read from the diffs directory
@@ -91,10 +97,17 @@ def generate_feedback():
         
                 # Split the diff into manageable chunks
                 diff_chunks = text_splitter.split_documents(diff_documents)
-        
+
                 chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
+                token_count = 0
                 for i, chunk in enumerate(diff_chunks):
-                    chat_history.append(HumanMessage(content = chunk.page_content))
+                    chunk_content = chunk.page_content
+                    chunk_tokens = count_tokens(chunk_content, model="gpt-4")
+                    if total_token_count + chunk_tokens > MAX_TOKENS:
+                        break
+                    else:
+                        chat_history.append(HumanMessage(content = chunk.content))
+                        token_count += chunk_tokens
 
                 result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
     
