@@ -106,7 +106,8 @@ def generate_feedback():
         the commit messages. Highlight any security vulnerabilities or concerns.🪪 \
         Focus on major issues and avoid minor stylistic preferences. \
         Use bullet points for multiple comments. \
-        Be specific in your feedback and provide examples if possible."""
+        Be specific in your feedback and provide examples if possible.\n\n
+        {context}"""
 
         qa_prompt = ChatPromptTemplate.from_messages(
             [
