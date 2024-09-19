@@ -104,7 +104,7 @@ def generate_feedback():
                 for i, chunk in enumerate(diff_chunks):
                     chunk_content = chunk.page_content
                     chunk_tokens = count_tokens(chunk_content, model="gpt-4")
-                    if total_token_count + chunk_tokens > MAX_TOKENS:
+                    if token_count + chunk_tokens > MAX_TOKENS:
                         break
                     else:
                         chat_history.append(HumanMessage(content = chunk.content))
