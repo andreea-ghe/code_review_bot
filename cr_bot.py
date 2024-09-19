@@ -1,5 +1,7 @@
 import os
 import sys
+import mimetypes
+
 from dotenv import load_dotenv
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -115,9 +117,20 @@ def get_all_files_and_content():
         for root, _, files in os.walk("all_files"):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
-                with open(file_path, 'r') as file:
-                    content = file.read()
-                    total_files.write(f"File name: {file_name}\nContent:\n{content}\n\n")
+                
+                # Guess the MIME type of the file
+                mime_type, _ = mimetypes.guess_type(file_path)
+                
+                try:
+                    if mime_type and mime_type.startswith('text'):
+                        # If it's a text file, read and write its content
+                        with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
+                            content = file.read()
+                            total_files.write(f"File name: {file_name}\nContent:\n{content}\n\n")
+                    else:
+                        total_files.write(f"File name: {file_name}\nContent: <binary file>\n\n")
+                except Exception as e:
+                    total_files.write(f"File name: {file_name}\nError reading file: {str(e)}\n\n")
 
         
 if __name__ == "__main__":
