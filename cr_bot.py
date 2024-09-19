@@ -92,7 +92,7 @@ def generate_feedback():
             return len(enc.encode(message_content))
         
         # Process each diff file and provide feedback
-        for filename in os.listdir("diffs"):  # Read from the diffs directory
+        for filename in os.listdir("diffs"):
             print("filename:", filename)
             chat_history.clear()
             if filename.endswith(".diff"):
