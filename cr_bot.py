@@ -29,7 +29,7 @@ def generate_feedback():
         if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
-        llm_model = ChatOpenAI(model="gpt-3.5-turbo", openai_api_key=os.getenv("MY_URL"))
+        llm_model = ChatOpenAI(model="gpt-4", openai_api_key=os.getenv("MY_URL"))
     
         # Load the entire app's content for context
         loader_all_files_content = TextLoader("all_files_content.txt")
