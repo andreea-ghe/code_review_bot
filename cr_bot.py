@@ -22,11 +22,11 @@ class CompletionError(Exception):
 def generate_feedback():
     def get_review():
         ### Construct retriever ###
-        OPENAI_API_KEY = os.getenv("MY_URL")  # Make sure this is the correct environment variable
-        if not OPENAI_API_KEY:
+        api_key = os.getenv("MY_URL")  # Make sure this is the correct environment variable
+        if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
-        llm_model = OpenAI(model="gpt-4")
+        llm_model = OpenAI(model="gpt-4", api_key=os.getenv("MY_URL"))
     
         # Load the entire app's content for context
         loader_all_files_content = TextLoader("all_files_content.txt")
