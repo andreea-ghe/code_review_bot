@@ -1,3 +1,4 @@
 tenacity
 litellm
 langchain
+langchain_community
