@@ -135,7 +135,7 @@ def generate_feedback():
                 chat_history.append(HumanMessage(content = chunk.page_content))
             result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
 
-            chat_history.append(HumanMessage(content = query))
+            chat_history.append(HumanMessage(content = "Please analyse the last diff file that was given to you in the context of the entire app"))
             chat_history.append(SystemMessage(content = result["answer"]))
     
             # Append the review to the reviews.txt file
