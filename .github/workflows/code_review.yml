@@ -113,7 +113,7 @@ jobs:
 
       - name: Run Python Script
         env:
-          MY_URL: ${{ secrets.secret_url}}
+          OPENAI_API_KEY: ${{ secrets.secret_url}}
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
