@@ -42,6 +42,9 @@ jobs:
             echo "Directory is not empty, skipping clone"
           fi
 
+      - name: List Cloned Branches
+        run: git branch -a
+
       - name: Set Remote Tracking Branch
         run: |
           git branch -u origin/${{ inputs.base_branch }} ${{ inputs.base_branch }}
