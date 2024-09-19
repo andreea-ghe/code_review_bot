@@ -153,9 +153,12 @@ def get_file_diffs(file_list):
     if not os.path.isdir("diffs"):
         os.mkdir("diffs")
     for file_name in file_list.split():
-        diff_file = f"diffs/{file_name}.diff"
+        # Replace slashes with underscores
+        sanitized_file_name = file_name.replace("/", "_")
+        diff_file = f"diffs/{sanitized_file_name}.diff"
+        
         if os.path.exists(diff_file):
-            with open(f"diffs/{file_name}.txt", "w") as original_file:
+            with open(f"diffs/{sanitized_file_name}.txt", "w") as original_file:
                 with open(diff_file, 'r') as file:
                     diff = file.read()
                 original_file.write(diff)
