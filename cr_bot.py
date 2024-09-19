@@ -107,7 +107,7 @@ def generate_feedback():
                     if token_count + chunk_tokens > MAX_TOKENS:
                         break
                     else:
-                        chat_history.append(HumanMessage(content = chunk.content))
+                        chat_history.append(HumanMessage(content = chunk_content))
                         token_count += chunk_tokens
 
                 result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
