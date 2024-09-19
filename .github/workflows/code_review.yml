@@ -62,6 +62,11 @@ jobs:
           fi
           npm install @octokit/core@latest node-fetch
 
+      - name: Checkout Pull Request Branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
       - name: Fetch Base Branch (Main)
         # run: git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
         run: git fetch origin main:main
