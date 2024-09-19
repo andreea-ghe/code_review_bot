@@ -78,7 +78,6 @@ jobs:
       - name: List All Changed Files
         run: |
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          # for file in $(git diff --name-only main..${{ github.event.pull_request.head.ref }}); do
             echo "$file was changed"
           done
 
@@ -87,8 +86,7 @@ jobs:
 
       - name: Get File Diffs
         run: |
-          # changed_files = $(git diff --name-only main..${{ github.event.pull_request.head.ref }})
-          changed_files = ${{ steps.changed-files.outputs.all_changed_files }}
+          changed_files = $(git diff --name-only main..${{ github.event.pull_request.head.ref }})
           echo "Generating diffs for: $changed_files"
           for file in $changed_files; do
             dir_name=$(dirname "$file")
@@ -117,8 +115,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.secret_url}}
         run: |
-          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          # changed_files="$(git diff --name-only main..${{ github.event.pull_request.head.ref }})"
+          changed_files="$(git diff --name-only main..${{ github.event.pull_request.head.ref }})"
           python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
           cat reviews.txt
 
