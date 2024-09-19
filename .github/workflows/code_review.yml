@@ -36,9 +36,9 @@ jobs:
             mkdir -p /home/runner/work/code_review_bot/code_review_bot/clone
           fi
           if [ -z "$(ls -A /home/runner/work/code_review_bot/code_review_bot/clone)" ]; then
-            git clone --branch ${{ inputs.base_branch }} --single-branch https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
+             git clone --branch langchain https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
           else
-            echo "Directory is not empty, skipping clone"
+             echo "Directory is not empty, skipping clone"
           fi
 
       - name: Cache Python Packages
@@ -62,9 +62,9 @@ jobs:
           fi
           npm install @octokit/core@latest node-fetch
 
-      # - name: Fetch Base Branch
-      #   run: |
-      #     git fetch origin ${{ inputs.base_branch }}
+      - name: Fetch Base Branch (Main)
+        run: git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
+        # run: git fetch origin main:main
 
       - name: Get Changed Files
         id: changed-files
@@ -81,12 +81,12 @@ jobs:
 
       - name: Get File Diffs
         run: |
-          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          changed_files=$(git diff --name-only main..${{ github.event.pull_request.head.ref }})
           echo "Generating diffs for: $changed_files"
           for file in $changed_files; do
             dir_name=$(dirname "$file")
             mkdir -p "diffs/$dir_name"
-            if git diff ${{ inputs.base_branch }} -- "$file" > "diffs/$file.diff"; then
+            if git diff main -- "$file" > "diffs/$file.diff"; then
               echo "Diff for $file generated successfully."
             else
               echo "No diff generated for $file. Skipping."
