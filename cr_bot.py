@@ -29,7 +29,7 @@ def generate_feedback():
         if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
-        llm_model = ChatOpenAI(model="gpt-4-32k", openai_api_key=os.getenv("MY_URL"))
+        llm_model = ChatOpenAI(model="gpt-4", openai_api_key=os.getenv("MY_URL"))
     
         # Load the entire app's content for context
         loader_all_files_content = TextLoader("all_files_content.txt")
@@ -92,19 +92,20 @@ def generate_feedback():
                 # Split the diff into manageable chunks
                 diff_chunks = text_splitter.split_documents(diff_documents)
         
-                review_for_file = ""
                 chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
                 for i, chunk in enumerate(diff_chunks):
                     chat_history.append(HumanMessage(content = chunk.page_content))
+
                 result = rag_chain.invoke({"input": "Please analyse the last diff file that was given to you in the context of the entire app", "chat_history": chat_history})
     
-                chat_history.append(HumanMessage(content = "Please analyse the last diff file that was given to you in the context of the entire app"))
-                chat_history.append(SystemMessage(content = result["answer"]))
         
                 # Append the review to the reviews.txt file
                 with open("reviews.txt", "a") as output_file:
                     with open(f"diffs/{filename}", "r") as file:
                         output_file.write(f"FILE: {os.path.splitext(filename)[0]}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
+                
+                chat_history.clear()
+
                     
     try:
         get_review()
