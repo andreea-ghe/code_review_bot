@@ -86,7 +86,8 @@ jobs:
 
       - name: Get File Diffs
         run: |
-          changed_files = $(git diff --name-only main..${{ github.event.pull_request.head.ref }})
+          # changed_files = $(git diff --name-only main..${{ github.event.pull_request.head.ref }})
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Generating diffs for: $changed_files"
           for file in $changed_files; do
             dir_name=$(dirname "$file")
