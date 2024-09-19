@@ -92,6 +92,7 @@ def generate_feedback():
         
         # Process each diff file and provide feedback
         for filename in os.listdir("diffs"):  # Read from the diffs directory
+            chat_history.clear()
             if filename.endswith(".diff"):
                 loader_diff = TextLoader(f"diffs/{filename}")
                 diff_documents = loader_diff.load()
@@ -106,7 +107,7 @@ def generate_feedback():
                 for i, chunk in enumerate(diff_chunks):
                     chunk_content = chunk.page_content
                     chunk_tokens = count_tokens(chunk_content, model="gpt-4")
-                    if token_count + chunk_tokens >= MAX_TOKENS:
+                    if token_count + chunk_tokens >= 7900:
                         break
                     else:
                         chat_history.append(HumanMessage(content = chunk_content))
