@@ -37,9 +37,9 @@ jobs:
           fi
           ls -l /home/runner/work/code_review_bot/code_review_bot/clone
           if [ -z "$(ls -A /home/runner/work/code_review_bot/code_review_bot/clone)" ]; then
-             git clone --branch ${{ inputs.base_branch }} --single-branch https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
+            git clone --branch ${{ inputs.base_branch }} --single-branch https://x-access-token:${{ secrets.token }}@github.com/andreea-ghe/code_review_bot.git /home/runner/work/code_review_bot/code_review_bot/clone
           else
-             echo "Directory is not empty, skipping clone"
+            echo "Directory is not empty, skipping clone"
           fi
 
       - name: Cache Python Packages
@@ -63,9 +63,9 @@ jobs:
           fi
           npm install @octokit/core@latest node-fetch
 
-      - name: Fetch Base Branch
-        run: |
-          git fetch origin ${{ inputs.base_branch }}
+      # - name: Fetch Base Branch
+      #   run: |
+      #     git fetch origin ${{ inputs.base_branch }}
 
       - name: Get Changed Files
         id: changed-files
