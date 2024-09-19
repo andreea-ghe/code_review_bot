@@ -98,13 +98,15 @@ def generate_feedback():
         
                 # Split the diff into manageable chunks
                 diff_chunks = text_splitter.split_documents(diff_documents)
-
-                chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
+                
                 token_count = 0
+                chat_history.append(HumanMessage(content = "Here starts the diff file:\n"))
+                token_count += count_tokens("Here starts the diff file:\n", model="gpt-4")
+                token_count += count_tokens("Please analyse the last diff file that was given to you in the context of the entire app", model="gpt-4")
                 for i, chunk in enumerate(diff_chunks):
                     chunk_content = chunk.page_content
                     chunk_tokens = count_tokens(chunk_content, model="gpt-4")
-                    if token_count + chunk_tokens > MAX_TOKENS:
+                    if token_count + chunk_tokens >= MAX_TOKENS:
                         break
                     else:
                         chat_history.append(HumanMessage(content = chunk_content))
