@@ -22,7 +22,7 @@ class CompletionError(Exception):
 def generate_feedback():
     def get_review():
         ### Construct retriever ###
-        api_key = os.getenv("MY_URL")  # Make sure this is the correct environment variable
+        OPENAI_API_KEY = os.getenv("MY_URL")  # Make sure this is the correct environment variable
         if not api_key:
             raise CompletionError("API Key not found. Please set OPENAI_API_KEY in your environment variables.")
         
