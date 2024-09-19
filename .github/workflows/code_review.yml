@@ -122,8 +122,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.secret_url}}
         run: |
-          changed_files=$(git diff --name-only main..${{ github.event.pull_request.head.ref }})
-          # changed_files=${{ steps.changed-files.outputs.all_changed_files }}
+          # changed_files=$(git diff --name-only main..${{ github.event.pull_request.head.ref }})
+          changed_files=${{ steps.changed-files.outputs.all_changed_files }}
           python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
           cat reviews.txt
 
