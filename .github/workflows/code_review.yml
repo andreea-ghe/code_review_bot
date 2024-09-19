@@ -111,6 +111,9 @@ jobs:
             mkdir -p "all_files/$dir_name"
             cp "$file" "all_files/$file"
           done
+          
+      - name: Set Read Permissions for All Files
+        run: chmod -R a+r .
 
       - name: Run Python Script
         env:
