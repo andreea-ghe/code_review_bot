@@ -13,13 +13,11 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 load_dotenv()
-
 class CompletionError(Exception):
     """Custom exception for completion errors"""
     pass
-
+    
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(), retry=retry_if_exception_type(Exception), before_sleep=before_sleep_log(logger, logging.WARNING))
 def generate_feedback():
     def get_review():
