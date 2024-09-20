@@ -163,6 +163,5 @@ if __name__ == "__main__":
         print("Usage: python chatbot.py <file_names>")
         sys.exit(1)
 
-    files = sys.argv[1]
     get_all_files_and_content()
     generate_feedback()  
