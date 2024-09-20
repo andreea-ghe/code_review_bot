@@ -68,7 +68,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Fetch Base Branch (Main)
-        # run: git fetch origin ${{ inputs.base_branch }}:${{ inputs.base_branch }}
         run: git fetch origin main:main
 
       - name: Get Changed Files
@@ -86,7 +85,6 @@ jobs:
 
       - name: Get File Diffs
         run: |
-          # changed_files = $(git diff --name-only main..${{ github.event.pull_request.head.ref }})
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Generating diffs for: $changed_files"
           for file in $changed_files; do
@@ -115,15 +113,14 @@ jobs:
       - name: Set Read Permissions for All Files
         run: chmod -R u+rwX,go+rX .
 
-      - name: Remove Executable Permissions from Files
-        run: find . -type f -name "*.py" -exec chmod -x {} \;
+      # - name: Remove Executable Permissions from Files
+      #   run: find . -type f -name "*.py" -exec chmod -x {} \;
 
       - name: Run Python Script
         env:
           OPENAI_API_KEY: ${{ secrets.secret_url}}
         run: |
           changed_files=$(git diff --name-only main..${{ github.event.pull_request.head.ref }})
-          # changed_files=${{ steps.changed-files.outputs.all_changed_files }}
           python3 /home/runner/work/code_review_bot/code_review_bot/clone/cr_bot.py "$changed_files"
           cat reviews.txt
 
