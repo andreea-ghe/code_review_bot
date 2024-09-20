@@ -113,9 +113,6 @@ jobs:
       - name: Set Read Permissions for All Files
         run: chmod -R u+rwX,go+rX .
 
-      # - name: Remove Executable Permissions from Files
-      #   run: find . -type f -name "*.py" -exec chmod -x {} \;
-
       - name: Run Python Script
         env:
           OPENAI_API_KEY: ${{ secrets.secret_url}}
