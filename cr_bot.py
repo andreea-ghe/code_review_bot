@@ -44,7 +44,7 @@ def generate_feedback():
     
         # Create a vector store for retrieving context using OpenAI embeddings
         vectorstore = Chroma.from_documents(documents=context_chunks, embedding=OpenAIEmbeddings())
-        retriever = vectorstore.as_retriever()
+        retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
         
         system_prompt = """
         Given a chat history and the latest user question \
@@ -71,7 +71,10 @@ def generate_feedback():
         the commit messages. Highlight any security vulnerabilities or concerns.🪪 \
         Focus on major issues and avoid minor stylistic preferences. \
         Use bullet points for multiple comments. \
-        Be specific in your feedback and provide examples if possible.\n\n
+        Be specific in your feedback and provide examples if possible. \
+        When analyzing the diff, always consider that definitions or initializations \
+        might exist elsewhere in the codebase. Avoid assuming variables or functions \
+        are undefined without checking the retrieved context\n\n
         {context}"""
 
         qa_prompt = ChatPromptTemplate.from_messages(
@@ -127,7 +130,7 @@ def generate_feedback():
                     with open("reviews.txt", "a") as output_file:
                         with open(filepath, "r") as file:
                             file_relative_path = os.path.relpath(os.path.splitext(filepath)[0], start="diffs")
-                            output_file.write(f"FILE: {file_relative_path}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW")
+                            output_file.write(f"FILE: {file_relative_path}\nDIFF: {file.read()}\nENDDIFF\nREVIEW: \n{result['answer']}\nENDREVIEW\n")
                     
                     
     try:
@@ -159,9 +162,5 @@ def get_all_files_and_content():
 
         
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python chatbot.py <file_names>")
-        sys.exit(1)
-
     get_all_files_and_content()
     generate_feedback()  
